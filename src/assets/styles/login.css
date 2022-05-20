@@ -1,0 +1,8 @@
+.row{
+  border: 0px solid red;
+  margin-top: 10%;
+}
+
+.col-lg-6{
+  border: 0px solid blue;
+}
