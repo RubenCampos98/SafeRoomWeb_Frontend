@@ -1,15 +1,110 @@
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
 import './App.css';
-import { BrowserRouter, BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+//-----------------Icons-----------------
+import * as IconFa from 'react-icons/fa';
+import * as IconBs from 'react-icons/bs';
+import * as IconBi from 'react-icons/bi';
+import * as IconAi from 'react-icons/ai';
+
 import { Button } from 'react-bootstrap'
-import { SidebarMenu } from 'react-bootstrap-sidebar-menu';
 
-import Login from './views/login'
+import Login from './views/login';
+import Rooms from './views/rooms';
+import Centers from './views/centers';
+import Users from './views/users';
+import Bookings from './views/bookings';
+import HomePage from './views/home'
 
-const App =() => {
+//import SideBar from './components/sidebar';
+
+/* export default function App(){
+
+  const [Room, setRoom] = useState("");
+  const [Center, setCenter] = useState("");
+  const [User, setUser] = useState("");
+  const [Booking, setBooking] = useState("");
+ 
+  return (
+  <BrowserRouter>
+
+    <SideBar/>
+    
+      <div className='container'>
+        <div className='row'>
+          <div className='col-lg-10 offset-md-1' style={{border: "1px solid blue"}}>
+            <h1> HomePage</h1>
+            <Button onClick={() => console.log("hello")}>Button</Button>
+            <Button onClick={() => {setRoom("Rooms"); setCenter(""); setBooking(""); setUser("") }}>Rooms</Button>
+            <Button onClick={() => {setCenter("Centers"); setRoom(""); setBooking(""); setUser("") }}>Centers</Button>
+            <Button onClick={() => {setUser("Users"); setRoom(""); setCenter(""); setBooking("") }}>Users</Button>
+            <Button onClick={() => {setBooking("Bookings"); setRoom(""); setCenter(""); setUser(""); }}>Bookings</Button>
+            {Room === "Rooms" && <Rooms/>}
+            {Center === "Centers" && <Centers/>}
+            {User === "Users" && <Users/>}
+            {Booking === "Bookings" && <Bookings/>}
+          </div>
+        </div>
+      </div>
+
+  </BrowserRouter>
+  ); 
+} */
+/* ------------------------------------------------------------------------------------------------------------- */
+/* export default class App extends Component{
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      isVisible: false
+    }
+    this.isElVisible = this.isElVisible.bind(this);
+  }
+ 
+  isElVisible() {
+    this.setState({isVisible: !this.isVisible});
+  }
+
+  render() {
+    return (
+      <div>
+        <SideBar isViz={this.isElVisible} />
+        <Rooms /> { this.state.isVisible? <Centers /> : '' }
+      </div>
+    );
+  }
+
+} */
+
+
+/* function App(){
+  return(
+    <Router>
+      <SideBar/>
+      <Routes>
+        <Route path='/' exact element={ <Home/> }/>
+        <Route path='/reservas' element={ <Bookings/> }/>
+        <Route path='/centros' element={ <Centers/> }/>
+        <Route path='/salas' element={ <Rooms/> }/>
+        <Route path='/utilizadores' element={ <Users/> }/>
+      </Routes>
+    </Router>
+  );
+}
+
+export default App; */
+
+const App = () => {
 
   const sidebarCollapsed = localStorage.getItem('sidebar-collapsed')
   const [isExpanded, setIsExpanded] = useState(sidebarCollapsed ? false : true)
+
+  const [Home, setHome] = useState("");
+  const [Room, setRoom] = useState("");
+  const [Center, setCenter] = useState("");
+  const [User, setUser] = useState("");
+  const [Booking, setBooking] = useState("");
+  
 
   const handleToggler = () => {
     if(isExpanded){
@@ -22,176 +117,67 @@ const App =() => {
   }
 
   return (
-  <BrowserRouter>
-
-    <div className={isExpanded ? "Sidebar" : "Sidebar collapsed"}>
-      <div
-      className="sidebar-header">
-      <div className="sidebar-icon" onClick={handleToggler} />
-      <h1 className="sidebar-logo">LOGO</h1>
-      </div>
-      <div className="sidebar-items">
-      <div className="item">
-      <div GridFill className="sidebar-icon" />
-      <span className="sidebar-text">Dashboard</span>
-      </div>
-      <div className="item">
-      <div className="sidebar-icon" />
-      <span className="sidebar-text">Chat</span>
-      </div>
-      <div className="item">
-      <div className="sidebar-icon" />
-      <span className="sidebar-text">Teams</span>
-      </div>
-      <div className="item">
-      <div className="sidebar-icon" />
-      <span className="sidebar-text">Tasks</span>
-      </div>
-      <div className="item">
-      <div className="sidebar-icon" />
-      <span className="sidebar-text">Analytics</span>
-      </div>
-      </div>
-    </div>
-
-{/*   <div className="col-12">
-    <nav className ="navbar bg-primary">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-      <img src={require('./assets/images/logo_1.png')}/>
-    </button>
-    <div className="collapse show navbar-collapse" id="navbarToggleExternalContent">
-      <ul className ="nav navbar-nav" style={{marginTop: "3%", border:"2px solid red", width:"15%"}}>
-        <li className ="nav-item">
-        <a className ="nav-link" href="www.google.pt"> Home </a>
-        </li>
-        <li className ="nav-item">
-        <a className ="nav-link" href="www.google.pt"> Services </a>
-        </li>
-        <li className ="nav-item">
-        <a className ="nav-link" href="www.google.pt"> Contact </a>
-        </li>
-        <li className ="nav-item">
-        <a className ="nav-link" href="www.google.pt"> Blogs </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-</div>
-
-<div className='row mt-0'>
-  <div className="col col-8 offset-md-2" style={{border: "2px solid red", position: "absolute"}}>
-    <div className="container">
-      <h1>Dashboard</h1>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">First</th>
-          <th scope="col">Last</th>
-          <th scope="col">Handle</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-        </tr>
-        <tr>
-          <th scope="row">2</th>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td colspan="2">Larry the Bird</td>
-          <td>@twitter</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-</div> */}
-{/* <div class="collapse" id="navbarToggleExternalContent">
-  <div class="bg-dark p-4">
-    <h5 class="text-white h4">Collapsed content</h5>
-    <span class="text-muted">Toggleable via the navbar brand.</span>
-  </div>
-</div>
-<nav class="navbar navbar-dark bg-dark">
-  <div class="container-fluid">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  </div>
-</nav> */}
-
-{/*   <nav className="navbar navbar-expand-lg navbar-light bg-primary">
-  <div className="container-fluid">
-    <a className="navbar-brand" href="#">Navbar</a>
-    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span className="navbar-toggler-icon"></span>
-    </button>
-  </div>
-</nav>
-
-    <div className='col col-lg-2'>
-      <div className='sidebar'>
-        <div className="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-          <a className="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">Home</a>
-          <a className="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Profile</a>
-          <a className="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Messages</a>
-          <a className="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</a>
+    <div className='container'>
+      <div className={isExpanded ? "Sidebar" : "Sidebar collapsed"}>
+        <div className="sidebar-header">
+          <div className="sidebar-icon" onClick={handleToggler} >
+            <IconBs.BsList size={28} style={{marginLeft: "5px", marginBottom: "12px", marginTop: "5px"}} />
+          </div>
         </div>
-        <div className="tab-content" id="v-pills-tabContent">
-          <div className="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">...</div>
-          <div className="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">...</div>
-          <div className="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">...</div>
-          <div className="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...</div>
+        <div className="sidebar-items">
+          <div className="item" 
+          onClick={() => {setHome("HomePage"); setUser(""); setRoom(""); setCenter(""); setBooking("") }}>
+            <div className="sidebar-icon" />
+            <IconAi.AiFillHome style={{marginRight: "10px"}} />
+            <span className="sidebar-text">Inicio</span>
+          </div>
+          <div className="item" 
+          onClick={() => {setUser("Users"); setHome(""); setRoom(""); setCenter(""); setBooking("") }}>
+            <div className="sidebar-icon" />
+            <IconFa.FaUsers style={{marginRight: "10px"}} />
+            <span className="sidebar-text">Utilizadores</span>
+          </div>
+          <div className="item" 
+          onClick={() => {setBooking("Bookings"); setHome(""); setRoom(""); setCenter(""); setUser(""); }}>
+            <div className="sidebar-icon" />
+            <IconBi.BiBook style={{marginRight: "10px"}} />
+            <span className="sidebar-text">Registos</span>
+          </div>
+          <div className="item" 
+          onClick={() => {setRoom("Rooms"); setHome(""); setCenter(""); setBooking(""); setUser("") }}>          
+            <div className="sidebar-icon" />
+            <IconBi.BiBuildings style={{marginRight: "10px"}} />
+            <span className="sidebar-text">Salas</span>
+          </div>
+          <div className="item" 
+          onClick={() => {setCenter("Centers"); setHome(""); setRoom(""); setBooking(""); setUser("") }}>
+            <div className="sidebar-icon" />
+            <IconBs.BsPinMapFill style={{marginRight: "10px"}} /> 
+            <span className="sidebar-text">Centros</span>
+          </div>
+          <div className="item" style={{marginTop: "130%"}}>
+            <div className="sidebar-icon" />
+            <IconFa.FaUserAlt style={{marginRight: "10px"}} />
+            <span className="sidebar-text">Perfil</span>
+          </div>
+          <div className="item" style={{marginTop: "0%"}}>
+            <div className="sidebar-icon" />
+            <IconBs.BsPinMapFill style={{marginRight: "10px"}} />
+            <span className="sidebar-text">Sair</span>
+          </div>
         </div>
       </div>
-    </div> */}
-
-{/* <div className='col col-lg-2'>
-  ola
-</div>
-<div className="row">
-  <div className="col-2">
-    <nav className ="navbar bg-light">
-      <ul className ="nav navbar-nav">
-        <li className ="nav-item">
-        <a className ="nav-link" href="#"> Home </a>
-        </li>
-        <li className ="nav-item">
-        <a className ="nav-link" href="#"> Utilizadores </a>
-        </li>
-        <li className ="nav-item">
-        <a className ="nav-link" href="#"> Salas </a>
-        </li>
-        <li className ="nav-item">
-        <a className ="nav-link" href="#"> Blogs </a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-
-  <div className="col-9">
-    <div className="container">
-      The Web Content in detail.
+      <div>
+        {Home === "HomePage" && <HomePage/>}
+        {Room === "Rooms" && <Rooms/>}
+        {Center === "Centers" && <Centers/>}
+        {User === "Users" && <Users/>}
+        {Booking === "Bookings" && <Bookings/>}
+      </div>
     </div>
-    <div className="container">
-      <p> The vertical menu can place</p>
-    </div>
-  </div>
-</div> */}
-{/*      <Routes>
-      <Route path='/login' element={<Login/>}/>
-    </Routes> */}
-
-  </BrowserRouter>
+    
+    
   );
 }
 
-export default App;
+export default App
