@@ -1,134 +1,439 @@
 import '../assets/styles/login.css'
 import { Button, Table } from 'react-bootstrap'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 
 import UtilizadorEditar from '../views/users_edit'
+import { useParams } from 'react-router-dom';
 
 
-/* const state = () => {
+function Users(){
 
-  const [user, setUser] = useState({
-    nome: "",
-    password: "",
-    email: "",
-    contacto: 0,
-    morada: "",
-    cargo: 0,
-    estadoconta: 0
-  });
+  const [id_user, setId_user] = useState(1);
+  const [nome, setNome] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [contacto, setContacto] = useState("");
+  const [morada, setMorada] = useState("");
+  const [cargo, setCargo] = useState("");
+  const [user, setUser] = useState({})
+  const [usersList, setUsersList] = useState([])
+  const [getId, setGetId] = useState(1)
 
-  const {
-    nome,
-    password,
-    email,
-    contacto,
-    morada,
-    cargo,
-    estadoconta
-  } = user;
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3001/api/visualizar_user/${getId}`)
+      .then(res => {
+        console.log(res.data.data)
+        setUser(res.data.data[0])
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }, [getId])
 
-  const onInputChange = e => {
-    setUser({ ...user, [e.target.name]: e.target.value })
+  const handleClick = (id_user) => {
+    setGetId(id_user)
   }
 
-  const onSubmit = async e => {
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/api/users")
+      .then(res => {
+        console.log(res.data.data)
+        setUsersList(res.data.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }, [user])
+
+  const handleEdit = (id_user, nome, password, email, morada, contacto, cargo) => {
+    localStorage.getItem('Id_user', id_user)
+    localStorage.getItem('Nome', nome)
+    localStorage.getItem('Password', password)
+    localStorage.getItem('Email', email)
+    localStorage.getItem('Morada', morada)
+    localStorage.getItem('Contacto', contacto)
+    localStorage.getItem('Cargo', cargo)
+  }
+
+  const submitUser = () => {
+    axios.post("http://localhost:3001/api/criar_user", { 
+      id_user: id_user,
+      nome: nome,
+      password: password,
+      email: email,
+      contacto: contacto,
+      morada: morada,
+      cargo: cargo
+    });
+    setUsersList(
+      [...usersList, 
+      {id_user: id_user, nome: nome, password: password, email: email, contacto: contacto, morada: morada, cargo: cargo}
+    ])
+    console.log('deu', nome, password, email, contacto, morada, cargo)
+  }
+
+  var index = usersList.map(function(e){
+    return e.id_user
+  }).indexOf(id_user)
+
+  const editUser = (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:3001/api/criar_user", user)
-    alert('DEUUUUUU')
+    let a = usersList[index];
+    a.nome = nome;
+    a.password = password;
+    a.email = email;
+    a.contacto = contacto;
+    a.morada = morada;
+    a.cargo = cargo;
   }
+
+/*   const deleteUser = (nome) => {
+    axios.post("http://localhost:3001/api/apagar_user", {
+      nome: nome
+    })
+  } */
+
+  const sendUpdate = () => {
+    //let Utilizador_ID = this.props.match.params.id_user;
+    const baseUrl = "http://localhost:3001/api/editar_user/" + 14
+    const datapost = {
+      nome : this.state.campNome_Edit,
+      password : this.state.campPassword_Edit,
+      email : this.state.campEmail_Edit,
+      contacto : this.state.campContacto_Edit,
+      morada : this.state.campMorada_Edit,
+      cargo: this.state.campCargo_Edit 
+    }
+    axios.put(baseUrl, datapost)
+    .then(response => {
+        if(response.data.success === true){
+            alert(response.data.message)
+        }
+        else {
+            alert("Error")
+        }
+    }).catch(error => {
+        alert("Error 34: " + error)
+    })
+  }
+
+  const sendDelete = (id_user) => {
+    const baseUrl = "http://localhost:3001/api/apagar_user"
+    axios.post(baseUrl, {
+      id_user: id_user
+    })
+    .then(response => {
+      console.log(response.data)
+      if(response.data.success){
+        Swal.fire(
+          'Apagado!',
+          'O utilizador foi eliminado!',
+          'success'
+        )
+        //this.loadUsers()
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      alert("Error 325", error)
+    })
+  }
+
+  const onDelete = (id_user) => {
+    Swal.fire({
+      title: 'Tem a certeza?',
+      text: 'Não poderá recuperar este ficheiro!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar'
+    }).then((result) => {
+        if(result.value){
+          sendDelete(id_user)
+        }else 
+        if(result.dismiss === Swal.DismissReason.cancel){
+          Swal.fire(
+            'Cancelado',
+            'Operação cancelada!',
+            'error'
+          )
+        }
+    })
+  }
+
 
   return (
-    <div className='App' style={{border: "1px solid red"}}>
-        <div className='row'>
-          <div className='col-lg-10 offset-md-2'>
-            <h1>Utilizadores</h1>
-            <Button className="btn btn-success" data-bs-toggle="modal" data-bs-target="#stateModal">Adicionar</Button>  
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nome</th>
-                  <th>Email</th>
-                  <th>Contacto</th>
-                  <th>Morada</th>
-                  <th>Cargo</th>
-                  <th>Estado Conta</th>
-                  <th>Data Validação</th>
-                  <th>Opções</th>
-                </tr>
-              </thead>
-              <tbody>
-                nada
-              </tbody>
-            </Table>
+    <div className='App' style={{border: "0px solid red"}}>
+      <div className='row'>
+        <div className='col-lg-10 offset-md-2'>
+          {/* <input type="text" value={id_user} onChange={e => setId_user(e.target.value)}/>
+          <Button className="btn btn-success" onClick={() => handleClick(4)}>Adicionar</Button>   */}
+          <div>
+            {user.nome}
           </div>
-        </div>
+          <h1>Utilizadores</h1>
+          <Button className="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUser">Adicionar</Button>  
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Contacto</th>
+                <th>Morada</th>
+                <th>Cargo</th>
+                <th>Estado Conta</th>
+                <th>Data Validação</th>
+                <th>Opções</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usersList.map((val) => {
+                return(
+                  <tr>
+                    <td> {val.id_user} </td>
+                    <td> {val.nome} </td>
+                    <td> {val.email} </td>
+                    <td> {val.contacto} </td>
+                    <td> {val.morada} </td>
+                    <td> {val.cargo} </td>
+                    <td> {val.estadoconta} </td>
+                    <td> {val.datavalidacao} </td>
+                    <td>
+                      <Button className="btn btn-success"
+                      data-bs-toggle="modal" data-bs-target="#editUser"
+                      onClick={() => handleClick(val.id_user)}>Editar</Button>  
+                    </td>
+                    <td>
+                      <Button className="btn btn-danger"
+                      onClick={() => onDelete(val.id_user)}>Apagar</Button>  
+                    </td>
+                  </tr>
+                ) 
+              })}
+            </tbody>
+          </Table>
+{/*           <div>
+          <div className="mb-3">
+            <label className="form-label">Nome</label>
+            <input type="text" className="form-control" 
+              name='nome'
+              onChange={(e) => { 
+                setNome(e.target.value) 
+              }}
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Password</label>
+            <input type="text" className="form-control" 
+              name='password'
+              onChange={(e) => { 
+                setPassword(e.target.value) 
+              }}
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Email</label>
+            <input type="email" className="form-control" 
+              name='email'
+              onChange={(e) => { 
+                setEmail(e.target.value) 
+              }}
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Morada</label>
+            <input type="text" className="form-control" 
+              name='morada'
+              onChange={(e) => { 
+                setMorada(e.target.value) 
+              }}
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Contacto</label>
+            <input type="text" className="form-control" 
+              name='contacto'
+              onChange={(e) => { 
+                setContacto(e.target.value) 
+              }}
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Cargo</label>
+            <input type="number" className="form-control" 
+              name='cargo'
+              onChange={(e) => { 
+                setCargo(e.target.value) 
+              }}
+            />
+          </div>
+          <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" className="btn btn-primary" onClick={() => submitUser()}>Save changes</button>
+          
+        </div> */}
+      </div>
+    </div>
 
-        <div className="modal fade" id="stateModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div className="modal fade" id="addUser" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="mb-3">
+                <label className="form-label">Nome</label>
+                <input type="text" className="form-control" 
+                  name='nome'
+                  onChange={(e) => { 
+                    setNome(e.target.value) 
+                  }}
+                />
               </div>
-              <div className="modal-body">
-                <form onSubmit={e => onSubmit(e)}>
-                  <div className="mb-3">
-                    <label className="form-label">Nome</label>
-                    <input type="text" className="form-control" name='nome'
-                    defaultValue={nome} 
-                    onChange={e => onInputChange(e)}/>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Password</label>
-                    <input type="text" className="form-control" name='password'
-                    defaultValue={password} 
-                    onChange={e => onInputChange(e)}/>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Email</label>
-                    <input type="email" className="form-control" name='email'
-                    defaultValue={email} 
-                    onChange={e => onInputChange(e)}/>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Morada</label>
-                    <input type="text" className="form-control" name='morada'
-                    defaultValue={morada} 
-                    onChange={e => onInputChange(e)}/>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Contacto</label>
-                    <input type="text" className="form-control" name='contacto'
-                    defaultValue={contacto} 
-                    onChange={e => onInputChange(e)}/>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Cargo</label>
-                    <input type="number" className="form-control" name='cargo'
-                    defaultValue={cargo} 
-                    onChange={e => onInputChange(e)}/>
-                  </div>
-                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" className="btn btn-primary">Save changes</button>
-                </form>
+              <div className="mb-3">
+                <label className="form-label">Password</label>
+                <input type="text" className="form-control" 
+                  name='password'
+                  onChange={(e) => { 
+                    setPassword(e.target.value) 
+                  }}
+                />
               </div>
-              <div className="modal-footer">
-              </div>
+                <div className="mb-3">
+                  <label className="form-label">Email</label>
+                  <input type="email" className="form-control" 
+                    name='email'
+                    onChange={(e) => { 
+                      setEmail(e.target.value) 
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Morada</label>
+                  <input type="text" className="form-control" 
+                    name='morada'
+                    onChange={(e) => { 
+                      setMorada(e.target.value) 
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Contacto</label>
+                  <input type="text" className="form-control" 
+                    name='contacto'
+                    onChange={(e) => { 
+                      setContacto(e.target.value) 
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Cargo</label>
+                  <input type="number" className="form-control" 
+                    name='cargo'
+                    onChange={(e) => { 
+                      setCargo(e.target.value) 
+                    }}
+                  />
+                </div>
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" className="btn btn-primary" onClick={() => submitUser()}>Save changes</button>
+            </div>
+            <div className="modal-footer">
             </div>
           </div>
         </div>
       </div>
+
+      <div className="modal fade" id="editUser" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">Editar Utilizador</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="mb-3">
+                <label className="form-label">Nome</label>
+                <input type="text" className="form-control" 
+                  name='nome'
+                  value={user.nome}
+                  onChange={(e) => { 
+                    setUser(e.target.value) 
+                  }}
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Password</label>
+                <input type="text" className="form-control" 
+                  name='password'
+                  value={user.password}
+                  onChange={(e) => { 
+                    setUser(e.target.value) 
+                  }}
+                />
+              </div>
+                <div className="mb-3">
+                  <label className="form-label">Email</label>
+                  <input type="email" className="form-control" 
+                    name='email'
+                    value={user.email}
+                    onChange={(e) => { 
+                      setUsersList(e.target.value) 
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Morada</label>
+                  <input type="text" className="form-control" 
+                    name='morada'
+                    value={user.morada}
+                    onChange={(e) => { 
+                      setMorada(e.target.value) 
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Contacto</label>
+                  <input type="text" className="form-control" 
+                    name='contacto'
+                    value={user.contacto}
+                    onChange={(e) => { 
+                      setContacto(e.target.value) 
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Cargo</label>
+                  <input type="number" className="form-control" 
+                    name='cargo'
+                    value={user.cargo}
+                    onChange={(e) => { 
+                      setCargo(e.target.value) 
+                    }}
+                  />
+                </div>
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" className="btn btn-primary" onClick={() => editUser()}>Save changes</button>
+            </div>
+            <div className="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 
 }
 
-export default state */
+export default Users
 
-class Users extends React.Component{   
+/* class Users extends React.Component{   
 
   constructor(props){
     super(props);
@@ -174,8 +479,8 @@ class Users extends React.Component{
 
   //usar funcao do estagio, click no ecra vai busvar id
 
-  visualizarUser(){
-    
+  visualizarUser(){    
+    //let params = useParams();
     let Utilizador_ID = this.props.match.params.id_user;
     const url = "http://localhost:3001/api/visualizar_user/" + Utilizador_ID
     axios.get(url)
@@ -294,11 +599,11 @@ class Users extends React.Component{
                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div className="modal-body">
-                <UtilizadorEditar/>
+                <UtilizadorEditar/> 
               </div>
             </div>
           </div>
-        </div>
+        </div> */
 
 
 {/*         <div className="modal fade" id="editUserModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -363,7 +668,7 @@ class Users extends React.Component{
           </div>
         </div> */}
 
-      </div>
+/*       </div>
     );
   }
 
@@ -383,11 +688,15 @@ class Users extends React.Component{
             <Button 
             data-bs-toggle="modal" 
             data-bs-target="#editUserModal"
+            onClick={function(event){ 
+              console.log(data.id_user); 
+              this.visualizarUser()
+            }} 
+            onClick={() => { this.visualizarUser() }}
             >Editar</Button>  
           </td>
           <td>
-            <Button className="btn btn-danger" 
-            onClick={()=>this.onDelete(data.id_user)}>Apagar</Button>  
+            <Button className="btn btn-danger">Apagar</Button>  
           </td>
         </tr>    
       )     
@@ -419,9 +728,9 @@ class Users extends React.Component{
     })
   }
 
-/*   sendUpdate(){
-    let Utilizador_ID = this.props.match.params.id_user;
-    const baseUrl = "http://localhost:3001/api/editar_user/" + Utilizador_ID
+  sendUpdate(){
+    //let Utilizador_ID = this.props.match.params.id_user;
+    const baseUrl = "http://localhost:3001/api/editar_user/" + 11
     const datapost = {
       nome : this.state.campNome_Edit,
       password : this.state.campPassword_Edit,
@@ -441,7 +750,7 @@ class Users extends React.Component{
     }).catch(error => {
         alert("Error 34: " + error)
     })
-} */
+}
 
   onDelete(id_user){
     Swal.fire({
@@ -488,3 +797,4 @@ class Users extends React.Component{
 
 export default Users
 
+ */
