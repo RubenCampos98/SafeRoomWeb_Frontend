@@ -1,5 +1,7 @@
 import '../assets/styles/login.css'
-import { Button, Table } from 'react-bootstrap'
+import { Button, Table, ToastContainer } from 'react-bootstrap'
+import Toast from 'react-bootstrap/Toast';
+import toast, { Toaster } from 'react-hot-toast';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
@@ -14,18 +16,28 @@ function Centros(){
   const [centro, setCentro] = useState({})
   const [centrosList, setCentrosList] = useState([])
   const [getId, setGetId] = useState(1)
+  const [show, setShow] = useState(false);
+  //---------------------------------------------------------------------
+  const [newLocalidade, setNewLocalidade]= useState(centro.localidade)
+  const [newNome, setNewNome] = useState(centro.nome)
+  const [newNotas, setNewNotas]= useState(centro.notas)
+
+  const notify = () => toast.success('Here is your toast.');
 
   useEffect(() => {
+    viewCentros();
+  }, []);
+
+  const viewCentros = () => {
     axios
       .get("http://localhost:3001/api/centros")
       .then(res => {
-        console.log(res.data.data)
-        setCentrosList(res.data.data)
+        setCentrosList(res.data.data) 
       })
       .catch(err => {
-        console.log(err)
+        toast.error('Erro a carregar os dados')
       })
-  }, [centro])
+  }
 
   useEffect(() => {
     axios
@@ -35,7 +47,7 @@ function Centros(){
         setCentro(res.data.data[0])
       })
       .catch(err => {
-        console.log(err)
+        toast.error('Erro')
       })
   }, [getId])
 
@@ -50,11 +62,18 @@ function Centros(){
       nome: nome,
       notas: notas
     });
-    setCentrosList(
-      [...centrosList, 
+    setCentrosList([
+      ...centrosList, 
       {id_centro: id_centro, localidade: localidade, nome: nome, notas: notas}
     ])
-    console.log('deu -', localidade, notas)
+  }
+
+  const editCentro = () => {
+    axios.put(`http://localhost:3001/api/editar_centro/${getId}`, { 
+      localidade: newLocalidade,
+      nome: newNome,
+      notas: newNotas
+    });
   }
 
   const sendDelete = (id_centro) => {
@@ -73,8 +92,7 @@ function Centros(){
       }
     })
     .catch(error => {
-      console.log(error)
-      alert("Error 325", error)
+      toast.error('Erro ao apagar centro')
     })
   }
 
@@ -104,7 +122,23 @@ function Centros(){
       <div className='row'>
         <div className='col-lg-8 offset-md-3'>
           <h1>Centros</h1>
-          <Button className="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCentro">Adicionar</Button> 
+          <Button className="btn btn-success mb-5" data-bs-toggle="modal" data-bs-target="#addCentro">Adicionar</Button> 
+          <Button className="mb-5" onClick={() => setShow(true)}>Show Toast</Button>
+          <Button className="mb-5" onClick={notify}>Hot Toast</Button>
+          <Toaster
+            toastOptions={{
+              success: {
+                style: {
+                  background: 'white',
+                },
+              },
+              error: {
+                style: {
+                  background: 'white',
+                },
+              },
+            }}
+          />
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -123,13 +157,15 @@ function Centros(){
                   <td> {val.id_centro} </td>
                   <td> {val.localidade} </td>
                   <td> {val.nome} </td>
+                  {val.estado === 0 ? 
+                    <td> Inativo </td> :
+                    <td> Ativo </td>
+                  }
                   <td> {val.notas} </td>
                   <td>
-                    <Button className="btn btn-success"
+                    <Button className="btn btn-success"  style={{marginRight: "20px"}}
                     data-bs-toggle="modal" data-bs-target="#editCentro"
                     onClick={() => handleClick(val.id_centro)}>Editar</Button>  
-                  </td>
-                  <td>
                     <Button className="btn btn-danger"
                     onClick={() => onDelete(val.id_centro)}>Apagar</Button>  
                   </td>
@@ -140,6 +176,17 @@ function Centros(){
           </Table>
         </div>
       </div>
+
+      <ToastContainer position="top-end">
+        <Toast bg="info" onClose={() => setShow(false)} show={show}>
+          <Toast.Header>
+            <img src="../assets/images/logo.png" className="rounded me-2" alt="" />
+            <strong className="me-auto">Bootstrap</strong>
+            <small>11 mins ago</small>
+          </Toast.Header>
+          <Toast.Body>Hello, world! This is a toast message.</Toast.Body>
+        </Toast>
+      </ToastContainer>
 
       <div className="modal fade" id="addCentro" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div className="modal-dialog">
@@ -177,10 +224,10 @@ function Centros(){
                   }}
                 />
               </div>
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" className="btn btn-primary" onClick={() => submitCentro()}>Save changes</button>
             </div>
             <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" className="btn btn-primary" onClick={() => submitCentro()}>Submeter</button>
             </div>
           </div>
         </div>
@@ -198,9 +245,9 @@ function Centros(){
                 <label className="form-label">Localidade</label>
                 <input type="text" className="form-control" 
                   name='localidade'
-                  value={centro.localidade}
+                  defaultValue={centro.localidade}
                   onChange={(e) => { 
-                    setLocalidade(e.target.value) 
+                    setNewLocalidade(e.target.value) 
                   }}
                 />
               </div>
@@ -208,9 +255,9 @@ function Centros(){
                 <label className="form-label">Nome</label>
                 <input type="text" className="form-control" 
                   name='nome'
-                  value={centro.nome}
+                  defaultValue={centro.nome}
                   onChange={(e) => { 
-                    setNome(e.target.value) 
+                    setNewNome(e.target.value) 
                   }}
                 />
               </div>
@@ -218,16 +265,16 @@ function Centros(){
                 <label className="form-label">Notas</label>
                 <input type="text" className="form-control" 
                   name='notas'
-                  value={centro.notas}
+                  defaultValue={centro.notas}
                   onChange={(e) => { 
-                    setNotas(e.target.value) 
+                    setNewNotas(e.target.value) 
                   }}
                 />
               </div>
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" className="btn btn-primary">Save changes</button>
             </div>
             <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" className="btn btn-primary" onClick={() => editCentro()}>Submeter</button>
             </div>
           </div>
         </div>

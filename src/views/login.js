@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Button, Form } from 'react-bootstrap'
 import React from 'react';
 
-class Login extends React.Component{
-  render(){
+function Login(){
+
     return (
         <div className='App'>
           <div className='row'>
@@ -33,7 +33,7 @@ class Login extends React.Component{
           </div>
         </div>
     );
-  }
+
 }
 
 export default Login

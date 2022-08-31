@@ -9,7 +9,7 @@ import * as IconAi from 'react-icons/ai';
 
 import { Button } from 'react-bootstrap'
 
-import Login from './views/login';
+import LoginPage from './views/login';
 import Rooms from './views/rooms';
 import Centers from './views/centers';
 import Users from './views/users';
@@ -104,6 +104,7 @@ const App = () => {
   const [Center, setCenter] = useState("");
   const [User, setUser] = useState("");
   const [Booking, setBooking] = useState("");
+  const [Login, setLogin] = useState("");
   
 
   const handleToggler = () => {
@@ -126,36 +127,37 @@ const App = () => {
         </div>
         <div className="sidebar-items">
           <div className="item" 
-          onClick={() => {setHome("HomePage"); setUser(""); setRoom(""); setCenter(""); setBooking("") }}>
+          onClick={() => {setHome("HomePage"); setUser(""); setRoom(""); setCenter(""); setBooking(""); setLogin("") }}>
             <div className="sidebar-icon" />
             <IconAi.AiFillHome style={{marginRight: "10px"}} />
             <span className="sidebar-text">Inicio</span>
           </div>
           <div className="item" 
-          onClick={() => {setUser("Users"); setHome(""); setRoom(""); setCenter(""); setBooking("") }}>
+          onClick={() => {setUser("Users"); setHome(""); setRoom(""); setCenter(""); setBooking(""); setLogin("") }}>
             <div className="sidebar-icon" />
             <IconFa.FaUsers style={{marginRight: "10px"}} />
             <span className="sidebar-text">Utilizadores</span>
           </div>
           <div className="item" 
-          onClick={() => {setBooking("Bookings"); setHome(""); setRoom(""); setCenter(""); setUser(""); }}>
+          onClick={() => {setBooking("Bookings"); setHome(""); setRoom(""); setCenter(""); setUser(""); setLogin("") }}>
             <div className="sidebar-icon" />
             <IconBi.BiBook style={{marginRight: "10px"}} />
-            <span className="sidebar-text">Registos</span>
+            <span className="sidebar-text">Reservas</span>
           </div>
           <div className="item" 
-          onClick={() => {setRoom("Rooms"); setHome(""); setCenter(""); setBooking(""); setUser("") }}>          
+          onClick={() => {setRoom("Rooms"); setHome(""); setCenter(""); setBooking(""); setUser(""); setLogin("") }}>          
             <div className="sidebar-icon" />
             <IconBi.BiBuildings style={{marginRight: "10px"}} />
             <span className="sidebar-text">Salas</span>
           </div>
           <div className="item" 
-          onClick={() => {setCenter("Centers"); setHome(""); setRoom(""); setBooking(""); setUser("") }}>
+          onClick={() => {setCenter("Centers"); setHome(""); setRoom(""); setBooking(""); setUser(""); setLogin("") }}>
             <div className="sidebar-icon" />
             <IconBs.BsPinMapFill style={{marginRight: "10px"}} /> 
             <span className="sidebar-text">Centros</span>
           </div>
-          <div className="item" style={{marginTop: "130%"}}>
+          <div className="item" style={{marginTop: "130%"}}
+          onClick={() => {setLogin("LoginPage"); setCenter(""); setHome(""); setRoom(""); setBooking(""); setUser("") }}>
             <div className="sidebar-icon" />
             <IconFa.FaUserAlt style={{marginRight: "10px"}} />
             <span className="sidebar-text">Perfil</span>
@@ -173,6 +175,7 @@ const App = () => {
         {Center === "Centers" && <Centers/>}
         {User === "Users" && <Users/>}
         {Booking === "Bookings" && <Bookings/>}
+        {Login === "LoginPage" && <LoginPage/>}
       </div>
     </div>
     

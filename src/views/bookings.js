@@ -16,8 +16,16 @@ function Bookings (){
   const [limpeza, setLimpeza] = useState("");
   const [notas, setNotas] = useState("");
   const [reserva, setReserva] = useState({})
-  const [resevasList, setReservasList] = useState([])
+  const [reservasList, setReservasList] = useState([])
   const [getId, setGetId] = useState(2)
+  //---------------------------------------------------------------------
+  const [newUser, setNewUser] = useState(reserva.id_user)
+  const [newSala, setNewSala] = useState(reserva.id_sala)
+  const [newData, setNewData] = useState(reserva.data)
+  const [newHoraInicio, setNewHoraInicio] = useState(reserva.hora_inicio) 
+  const [newHoraFim, setNewHoraFim] = useState(reserva.hora_fim) 
+  const [newLimpeza, setNewLimpeza] = useState(reserva.limpeza)
+  const [newNotas, setNewNotas] = useState(reserva.notas)
 
   useEffect(() => {
     axios
@@ -59,11 +67,23 @@ function Bookings (){
       notas: notas
     });
     setReservasList(
-      [...resevasList, 
+      [...reservasList, 
       {id_reserva: id_reserva, id_user: id_user, id_sala: id_sala, data: data, hora_inicio: hora_inicio, hora_fim: hora_fim,
       limpeza: limpeza, notas: notas}
     ])
-    console.log('deu -', data, hora_inicio)
+  }
+
+  const editReserva = () => {
+    axios.put(`http://localhost:3001/api/editar_reserva/${getId}`, { 
+      id_user: newUser,
+      id_sala: newSala,
+      data: newData,
+      hora_inicio: newHoraInicio,
+      hora_fim: newHoraFim,
+      limpeza: newLimpeza,
+      notas: newNotas
+    });
+    window.location.reload()
   }
 
   const sendDelete = (id_reserva) => {
@@ -113,7 +133,7 @@ function Bookings (){
       <div className='row'>
         <div className='col-lg-8 offset-md-3'>
           <h1>Reservas</h1>
-          <Button className="btn btn-success" data-bs-toggle="modal" data-bs-target="#addReserva">Adicionar</Button> 
+          <Button className="btn btn-success mb-5" data-bs-toggle="modal" data-bs-target="#addReserva">Adicionar</Button> 
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -129,12 +149,12 @@ function Bookings (){
               </tr>
             </thead>
             <tbody>
-              {resevasList.map((val) => {
+              {reservasList.map((val) => {
                 return(
                   <tr>
                     <td> {val.id_reserva} </td>
-                    <td> {val.id_user} </td>
-                    <td> {val.id_sala} </td>
+                    <td> {val.utilizadore.nome} </td>
+                    <td> {val.sala.nome} </td>
                     <td> {val.data} </td>
                     <td> {val.hora_inicio} </td>
                     <td> {val.hora_fim} </td>
@@ -228,10 +248,10 @@ function Bookings (){
                   }}
                 />
               </div>
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" className="btn btn-primary" onClick={() => submitReserva()}>Save changes</button>
             </div>
             <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" className="btn btn-primary" onClick={() => submitReserva()}>Submeter</button>
             </div>
           </div>
         </div>
@@ -249,9 +269,9 @@ function Bookings (){
                 <label className="form-label">Utilizador</label>
                 <input type="text" className="form-control" 
                   name='id_user'
-                  value={reserva.id_user}
+                  defaultValue={reserva.id_user}
                   onChange={(e) => { 
-                    setId_user(e.target.value) 
+                    setNewUser(e.target.value) 
                   }}
                 />
               </div>
@@ -259,9 +279,9 @@ function Bookings (){
                 <label className="form-label">Sala</label>
                 <input type="text" className="form-control" 
                   name='id_sala'
-                  value={reserva.id_sala}
+                  defaultValue={reserva.id_sala}
                   onChange={(e) => { 
-                    setId_sala(e.target.value) 
+                    setNewSala(e.target.value) 
                   }}
                 />
               </div>
@@ -269,9 +289,9 @@ function Bookings (){
                 <label className="form-label">Data</label>
                 <input type="text" className="form-control" 
                   name='data'
-                  value={reserva.data}
+                  defaultValue={reserva.data}
                   onChange={(e) => { 
-                    setData(e.target.value) 
+                    setNewData(e.target.value) 
                   }}
                 />
               </div>
@@ -279,9 +299,9 @@ function Bookings (){
                 <label className="form-label">Hora Inicio</label>
                 <input type="text" className="form-control" 
                   name='hora_inicio'
-                  value={reserva.hora_inicio}
+                  defaultValue={reserva.hora_inicio}
                   onChange={(e) => { 
-                    setHora_inicio(e.target.value) 
+                    setNewHoraInicio(e.target.value) 
                   }}
                 />
               </div>
@@ -289,9 +309,9 @@ function Bookings (){
                 <label className="form-label">Hora Fim</label>
                 <input type="text" className="form-control" 
                   name='hora_fim'
-                  value={reserva.hora_fim}
+                  defaultValue={reserva.hora_fim}
                   onChange={(e) => { 
-                    setHora_fim(e.target.value) 
+                    setNewHoraFim(e.target.value) 
                   }}
                 />
               </div>
@@ -299,9 +319,9 @@ function Bookings (){
                 <label className="form-label">Limpeza</label>
                 <input type="text" className="form-control" 
                   name='limpeza'
-                  value={reserva.limpeza}
+                  defaultValue={reserva.limpeza}
                   onChange={(e) => { 
-                    setLimpeza(e.target.value) 
+                    setNewLimpeza(e.target.value) 
                   }}
                 />
               </div>
@@ -309,16 +329,16 @@ function Bookings (){
                 <label className="form-label">Notas</label>
                 <input type="text" className="form-control" 
                   name='notas'
-                  value={reserva.notas}
+                  defaultValue={reserva.notas}
                   onChange={(e) => { 
-                    setNotas(e.target.value) 
+                    setNewNotas(e.target.value) 
                   }}
                 />
               </div>
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" className="btn btn-primary">Save changes</button>
             </div>
             <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" className="btn btn-primary" onClick={(e) => editReserva()}>Submeter</button>
             </div>
           </div>
         </div>
@@ -326,7 +346,6 @@ function Bookings (){
 
     </div>
   );
-
 
 }
 
