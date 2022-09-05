@@ -5,8 +5,6 @@ import axios from 'axios'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import Papa from "papaparse";
-import UtilizadorEditar from '../views/users_edit'
-import { useParams } from 'react-router-dom';
 
 
 function Users(){
@@ -45,9 +43,9 @@ function Users(){
     });
   };
 
-  const fudeo = () => {
+  const submitBulk = () => {
     console.log('FFF', csvArray)
-/*     const arrrray = [...csvArray]
+/*     const arrrray = [...csvArray]    acho que o erro está nas pelicas que faltam no array proveniente do ficheiro
     arrrray.push(todo)
     setCsvArray(arrrray)
     console.log(csvArray) */
@@ -56,9 +54,11 @@ function Users(){
         csvArray
       })
       .then(res => {
+        console.log('ok ', csvArray)
         console.log(res.data)
       })
       .catch(err => {
+        console.log('NOT ok ', csvArray)
         console.log(err)
       }); 
     setUsersList(
@@ -220,7 +220,7 @@ function Users(){
 {/*           <textarea class="form-control" type="text" onChange={(e) => { 
                       setCsvArray(e.target.value)  
                     }}></textarea> */}
-          <button className="btn btn-danger" onClick={fudeo}>DADOS ARRAY</button>
+          <button className="btn btn-danger" onClick={submitBulk}>DADOS ARRAY</button>
           <Table striped bordered hover>
             <thead>
               <tr>

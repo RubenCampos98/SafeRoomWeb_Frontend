@@ -105,6 +105,12 @@ const App = () => {
   const [User, setUser] = useState("");
   const [Booking, setBooking] = useState("");
   const [Login, setLogin] = useState("");
+
+  const showLogin = () => {
+    if (window.location.pathname === "/") {
+      return <LoginPage/>
+    }
+  }
   
 
   const handleToggler = () => {
@@ -170,6 +176,14 @@ const App = () => {
         </div>
       </div>
       <div>
+{/*         <Router>
+          <Route exact path='/' component={LoginPage}/>
+          <Route path='/home' component={HomePage}/>
+          <Route exact path='/salas' component={Rooms}/>
+          <Route exact path='/centros' component={Centers}/>
+          <Route exact path='/utilizadores' component={Users}/>
+          <Route exact path='/reservas' component={Bookings}/>
+        </Router> */}
         {Home === "HomePage" && <HomePage/>}
         {Room === "Rooms" && <Rooms/>}
         {Center === "Centers" && <Centers/>}

@@ -1,8 +1,24 @@
 import '../assets/styles/login.css'
 import { Button, Table } from 'react-bootstrap'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios'
 
 const Home = () => {
+
+  const [usersCount, setusersCount] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/api/contar_users")
+      .then(res => {
+        console.log(res.data.data)
+        setusersCount(res.data.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  })
+
   return (
     <div className='App' style={{border: "1px solid red"}}>
       <div className='row'>
@@ -17,7 +33,7 @@ const Home = () => {
                 </tr>
               </thead>
               <tbody>
-
+                <td>{ usersCount }</td>
               </tbody>
             </Table>
           <Table striped bordered hover className='col-lg-3 offset-md-6'>
